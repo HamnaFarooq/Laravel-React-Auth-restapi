@@ -5,12 +5,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>Email Marketing</title>
+        <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
+        
     </head>
     <body class="antialiased">
+        <!-- <h1>Welcome to Email Marketing App</h1> -->
         <div id="app">
-
+            <!--  -->
         </div>
-        <script src="{{ asset('js/app.js') }}"></script>
+        <script src="{{ mix('js/app.js') }}"></script>
     </body>
 </html>
