@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import Nav from "./partials/Nav";
 
 class Home extends Component {

@@ -1956,7 +1956,7 @@ var Dashboard = /*#__PURE__*/function (_Component) {
   _createClass(Dashboard, [{
     key: "render",
     value: function render() {
-      // console.log(localStorage.getItem("token"));
+      // console.log(localStorage.getItem("user"));
       if (!("user" in localStorage)) {
         window.location.replace("http://127.0.0.1:8000/login");
       }
@@ -2098,6 +2098,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+ // import React, { useState } from "react";
+// function ExampLoginle() {
+//     // Declare a new state variable, which we'll call "count"
+//     const [email, setEmail] = useState("");
+//     const [password, setPassword] = useState("");
+//     return (
+//         <div>
+//             <p>You clicked {count} times</p>
+//             <button onClick={() => setCount(count + 1)}>Click me</button>
+//         </div>
+//     );
+// }
 
 
 
@@ -2128,23 +2140,34 @@ var Login = /*#__PURE__*/function (_Component) {
   _createClass(Login, [{
     key: "onSubmit",
     value: function onSubmit(e) {
-      var _this2 = this;
-
       e.preventDefault();
       axios__WEBPACK_IMPORTED_MODULE_1___default().post("api/login", {
         email: this.state.email,
         password: this.state.password
       }).then(function (response) {
+        console.log(response, "login");
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", response.data.user);
         window.location.replace("http://127.0.0.1:8000/dashboard");
       })["catch"](function (error) {
-        _this2.email = "";
-        _this2.password = "";
-        console.log(error);
-        document.getElementById("error").innerHTML = "Wrong Email or Password";
+        document.getElementById("emailError").innerHTML = "";
+        document.getElementById("passwordError").innerHTML = "";
+        document.getElementById("errorMessage").innerHTML = "";
+
+        if (error.response.data.hasOwnProperty("errors")) {
+          if (error.response.data.errors.hasOwnProperty("email")) {
+            document.getElementById("emailError").innerHTML = error.response.data.errors.email;
+          }
+
+          if (error.response.data.errors.hasOwnProperty("password")) {
+            document.getElementById("passwordError").innerHTML = error.response.data.errors.password;
+          }
+        }
+
+        if (error.response.data.message) {
+          document.getElementById("errorMessage").innerHTML = error.response.data.message;
+        }
       });
-      console.log(this.state);
     }
   }, {
     key: "render",
@@ -2171,6 +2194,9 @@ var Login = /*#__PURE__*/function (_Component) {
               className: "form-control",
               placeholder: "Enter email",
               required: true
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+              id: "emailError",
+              className: "text-danger my-3"
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
             className: "form-group",
@@ -2183,9 +2209,12 @@ var Login = /*#__PURE__*/function (_Component) {
               className: "form-control",
               placeholder: "Enter password",
               required: true
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+              id: "passwordError",
+              className: "text-danger my-3"
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
-            id: "error",
+            id: "errorMessage",
             className: "text-danger my-3"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
             type: "submit",
@@ -2238,18 +2267,13 @@ var PrivateRoute = function PrivateRoute(_ref) {
   var Component = _ref.component,
       rest = _objectWithoutProperties(_ref, _excluded);
 
-  return (
-    /*#__PURE__*/
-    // Show the component only when the user is logged in
-    // Otherwise, redirect the user to /signin page
-    (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Route, _objectSpread(_objectSpread({}, rest), {}, {
-      render: function render(props) {
-        return "user" in localStorage ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(Component, _objectSpread({}, props)) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Redirect, {
-          to: "/login"
-        });
-      }
-    }))
-  );
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Route, _objectSpread(_objectSpread({}, rest), {}, {
+    render: function render(props) {
+      return "user" in localStorage ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(Component, _objectSpread({}, props)) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Redirect, {
+        to: "/login"
+      });
+    }
+  }));
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PrivateRoute);
@@ -2291,18 +2315,13 @@ var PublicRoute = function PublicRoute(_ref) {
       restricted = _ref.restricted,
       rest = _objectWithoutProperties(_ref, _excluded);
 
-  return (
-    /*#__PURE__*/
-    // restricted = false meaning public route
-    // restricted = true meaning restricted route
-    (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Route, _objectSpread(_objectSpread({}, rest), {}, {
-      render: function render(props) {
-        return "user" in localStorage && restricted ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Redirect, {
-          to: "/dashboard"
-        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(Component, _objectSpread({}, props));
-      }
-    }))
-  );
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Route, _objectSpread(_objectSpread({}, rest), {}, {
+    render: function render(props) {
+      return "user" in localStorage && restricted ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Redirect, {
+        to: "/dashboard"
+      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(Component, _objectSpread({}, props));
+    }
+  }));
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PublicRoute);
@@ -2381,21 +2400,39 @@ var Register = /*#__PURE__*/function (_Component) {
   _createClass(Register, [{
     key: "onSubmit",
     value: function onSubmit(e) {
-      var _this2 = this;
-
       e.preventDefault();
       axios.post("api/register", {
         email: this.state.email,
         password: this.state.password,
         name: this.state.name
       }).then(function (response) {
+        console.log(response.data, "register");
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", response.data.user);
-        window.location.replace("http://127.0.0.1:8000/dashboard");
+        window.location.replace("/dashboard");
       })["catch"](function (error) {
-        _this2.email = "";
-        _this2.password = "";
-        document.getElementById("error").innerHTML = "Email already or Password too short";
+        document.getElementById("nameError").innerHTML = "";
+        document.getElementById("emailError").innerHTML = "";
+        document.getElementById("passwordError").innerHTML = "";
+        document.getElementById("errorMessage").innerHTML = "";
+
+        if (error.response.data.hasOwnProperty("errors")) {
+          if (error.response.data.errors.hasOwnProperty("name")) {
+            document.getElementById("nameError").innerHTML = error.response.data.errors.name;
+          }
+
+          if (error.response.data.errors.hasOwnProperty("email")) {
+            document.getElementById("emailError").innerHTML = error.response.data.errors.email;
+          }
+
+          if (error.response.data.errors.hasOwnProperty("password")) {
+            document.getElementById("passwordError").innerHTML = error.response.data.errors.password;
+          }
+        }
+
+        if (error.response.data.message) {
+          document.getElementById("errorMessage").innerHTML = error.response.data.message;
+        }
       });
     }
   }, {
@@ -2420,6 +2457,9 @@ var Register = /*#__PURE__*/function (_Component) {
               placeholder: "Enter name",
               required: true,
               name: "name"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("small", {
+              id: "nameError",
+              className: "text-danger my-3"
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             className: "form-group",
@@ -2432,6 +2472,9 @@ var Register = /*#__PURE__*/function (_Component) {
               className: "form-control",
               required: true,
               placeholder: "Enter email"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("small", {
+              id: "emailError",
+              className: "text-danger my-3"
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             className: "form-group",
@@ -2444,9 +2487,12 @@ var Register = /*#__PURE__*/function (_Component) {
               className: "form-control",
               required: true,
               placeholder: "Enter password"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("small", {
+              id: "passwordError",
+              className: "text-danger my-3"
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-            id: "error",
+            id: "errorMessage",
             className: "text-danger my-3"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
             type: "submit",

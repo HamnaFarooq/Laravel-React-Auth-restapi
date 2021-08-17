@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { Link } from "react-router-dom";
 import Nav from "./partials/Nav";
 
@@ -26,15 +26,34 @@ class Register extends Component {
                 name: this.state.name,
             })
             .then((response) => {
+                console.log(response.data, "register");
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem("user", response.data.user);
-                window.location.replace("http://127.0.0.1:8000/dashboard");
+                window.location.replace("/dashboard");
             })
             .catch((error) => {
-                this.email = "";
-                this.password = "";
-                document.getElementById("error").innerHTML =
-                    "Email already or Password too short";
+                document.getElementById("nameError").innerHTML = "";
+                document.getElementById("emailError").innerHTML = "";
+                document.getElementById("passwordError").innerHTML = "";
+                document.getElementById("errorMessage").innerHTML = "";
+                if (error.response.data.hasOwnProperty("errors")) {
+                    if (error.response.data.errors.hasOwnProperty("name")) {
+                        document.getElementById("nameError").innerHTML =
+                            error.response.data.errors.name;
+                    }
+                    if (error.response.data.errors.hasOwnProperty("email")) {
+                        document.getElementById("emailError").innerHTML =
+                            error.response.data.errors.email;
+                    }
+                    if (error.response.data.errors.hasOwnProperty("password")) {
+                        document.getElementById("passwordError").innerHTML =
+                            error.response.data.errors.password;
+                    }
+                }
+                if (error.response.data.message) {
+                    document.getElementById("errorMessage").innerHTML =
+                        error.response.data.message;
+                }
             });
     }
     render() {
@@ -59,6 +78,10 @@ class Register extends Component {
                             required
                             name="name"
                         />
+                        <small
+                            id="nameError"
+                            className="text-danger my-3"
+                        ></small>
                     </div>
 
                     <div className="form-group">
@@ -71,6 +94,10 @@ class Register extends Component {
                             required
                             placeholder="Enter email"
                         />
+                        <small
+                            id="emailError"
+                            className="text-danger my-3"
+                        ></small>
                     </div>
 
                     <div className="form-group">
@@ -83,9 +110,13 @@ class Register extends Component {
                             required
                             placeholder="Enter password"
                         />
+                        <small
+                            id="passwordError"
+                            className="text-danger my-3"
+                        ></small>
                     </div>
 
-                    <div id="error" className="text-danger my-3"></div>
+                    <div id="errorMessage" className="text-danger my-3"></div>
 
                     <button
                         type="submit"
