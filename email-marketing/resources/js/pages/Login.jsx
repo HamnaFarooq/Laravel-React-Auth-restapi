@@ -1,47 +1,21 @@
-import React, { Component, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import Nav from "./partials/Nav";
-// import React, { useState } from "react";
-
-// function ExampLoginle() {
-//     // Declare a new state variable, which we'll call "count"
-//     const [email, setEmail] = useState("");
-//     const [password, setPassword] = useState("");
-
-//     return (
-//         <div>
-//             <p>You clicked {count} times</p>
-//             <button onClick={() => setCount(count + 1)}>Click me</button>
-//         </div>
-//     );
-// }
-
-class Login extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            email: "",
-            password: "",
-        };
-    }
-
-    handleChange = (e) => {
-        this.setState({ [e.target.name]: e.target.value });
-    };
-
-    onSubmit(e) {
+const Login = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const handleSubmit = (e) => {
         e.preventDefault();
-
         axios
             .post("api/login", {
-                email: this.state.email,
-                password: this.state.password,
+                email: email,
+                password: password,
             })
             .then((response) => {
                 console.log(response, "login");
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem("user", response.data.user);
-                window.location.replace("http://127.0.0.1:8000/dashboard");
+                window.location.replace("/dashboard");
             })
             .catch((error) => {
                 document.getElementById("emailError").innerHTML = "";
@@ -62,64 +36,54 @@ class Login extends Component {
                         error.response.data.message;
                 }
             });
-    }
+    };
+    return (
+        <div>
+            <Nav />
+            <form
+                className="col-md-6 mx-auto py-5"
+                role="form"
+                method="POST"
+                onSubmit={(e) => handleSubmit(e)}
+            >
+                <h3>Log in</h3>
+                <div className="form-group">
+                    <label>Email</label>
+                    <input
+                        onChange={(e) => setEmail(e.target.value)}
+                        type="email"
+                        name="email"
+                        className="form-control"
+                        placeholder="Enter email"
+                        required
+                    />
+                    <div id="emailError" className="text-danger my-3"></div>
+                </div>
 
-    render() {
-        let error = this.state.err;
-        let msg = !error ? "Login Successful" : "Wrong Credentials";
-        let name = !error ? "alert alert-success" : "alert alert-danger";
-        return (
-            <div>
-                <Nav />
+                <div className="form-group">
+                    <label>Password</label>
+                    <input
+                        onChange={(e) => setPassword(e.target.value)}
+                        name="password"
+                        type="password"
+                        className="form-control"
+                        placeholder="Enter password"
+                        required
+                    />
+                    <div id="passwordError" className="text-danger my-3"></div>
+                </div>
 
-                <form
-                    className="col-md-6 mx-auto py-5"
-                    role="form"
-                    method="POST"
-                    onSubmit={this.onSubmit.bind(this)}
+                <div id="errorMessage" className="text-danger my-3"></div>
+
+                <button
+                    type="submit"
+                    className="btn btn-primary btn-lg btn-block"
                 >
-                    <h3>Log in</h3>
-                    <div className="form-group">
-                        <label>Email</label>
-                        <input
-                            onChange={this.handleChange}
-                            type="email"
-                            name="email"
-                            className="form-control"
-                            placeholder="Enter email"
-                            required
-                        />
-                        <div id="emailError" className="text-danger my-3"></div>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Password</label>
-                        <input
-                            onChange={this.handleChange}
-                            name="password"
-                            type="password"
-                            className="form-control"
-                            placeholder="Enter password"
-                            required
-                        />
-                        <div
-                            id="passwordError"
-                            className="text-danger my-3"
-                        ></div>
-                    </div>
-
-                    <div id="errorMessage" className="text-danger my-3"></div>
-
-                    <button
-                        type="submit"
-                        className="btn btn-primary btn-lg btn-block"
-                    >
-                        Sign in
-                    </button>
-                </form>
-            </div>
-        );
-    }
-}
+                    Sign in
+                </button>
+            </form>
+        </div>
+    );
+};
 
 export default Login;

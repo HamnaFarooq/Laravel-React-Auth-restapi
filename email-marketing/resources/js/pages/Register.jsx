@@ -1,32 +1,22 @@
-import React, { Component, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import axios from "axios";
 import Nav from "./partials/Nav";
+import { Link } from "react-router-dom";
 
-class Register extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            email: "",
-            password: "",
-            name: "",
-        };
-    }
+const Register = () => {
+    const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
+    const [password, setPassword] = useState("");
 
-    handleChange = (e) => {
-        this.setState({ [e.target.name]: e.target.value });
-    };
-
-    onSubmit(e) {
+    const handleSubmit = (e) => {
         e.preventDefault();
-
         axios
             .post("api/register", {
-                email: this.state.email,
-                password: this.state.password,
-                name: this.state.name,
+                email: email,
+                name: name,
+                password: password,
             })
             .then((response) => {
-                console.log(response.data, "register");
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem("user", response.data.user);
                 window.location.replace("/dashboard");
@@ -55,82 +45,73 @@ class Register extends Component {
                         error.response.data.message;
                 }
             });
-    }
-    render() {
-        return (
-            <div>
-                <Nav />
-                <form
-                    className="col-md-6 mx-auto py-5"
-                    role="form"
-                    method="POST"
-                    onSubmit={this.onSubmit.bind(this)}
+    };
+    return (
+        <div>
+            <Nav />
+            <form
+                className="col-md-6 mx-auto py-5"
+                role="form"
+                method="POST"
+                onSubmit={(e) => handleSubmit(e)}
+            >
+                <h3>Register</h3>
+
+                <div className="form-group">
+                    <label>Name</label>
+                    <input
+                        onChange={(e) => setName(e.target.value)}
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter name"
+                        required
+                        name="name"
+                    />
+                    <small id="nameError" className="text-danger my-3"></small>
+                </div>
+
+                <div className="form-group">
+                    <label>Email</label>
+                    <input
+                        onChange={(e) => setEmail(e.target.value)}
+                        type="email"
+                        name="email"
+                        className="form-control"
+                        required
+                        placeholder="Enter email"
+                    />
+                    <small id="emailError" className="text-danger my-3"></small>
+                </div>
+
+                <div className="form-group">
+                    <label>Password</label>
+                    <input
+                        onChange={(e) => setPassword(e.target.value)}
+                        type="password"
+                        name="password"
+                        className="form-control"
+                        required
+                        placeholder="Enter password"
+                    />
+                    <small
+                        id="passwordError"
+                        className="text-danger my-3"
+                    ></small>
+                </div>
+
+                <div id="errorMessage" className="text-danger my-3"></div>
+
+                <button
+                    type="submit"
+                    className="btn btn-primary btn-lg btn-block"
                 >
-                    <h3>Register</h3>
-
-                    <div className="form-group">
-                        <label>Name</label>
-                        <input
-                            onChange={this.handleChange}
-                            type="text"
-                            className="form-control"
-                            placeholder="Enter name"
-                            required
-                            name="name"
-                        />
-                        <small
-                            id="nameError"
-                            className="text-danger my-3"
-                        ></small>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Email</label>
-                        <input
-                            onChange={this.handleChange}
-                            type="email"
-                            name="email"
-                            className="form-control"
-                            required
-                            placeholder="Enter email"
-                        />
-                        <small
-                            id="emailError"
-                            className="text-danger my-3"
-                        ></small>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Password</label>
-                        <input
-                            onChange={this.handleChange}
-                            type="password"
-                            name="password"
-                            className="form-control"
-                            required
-                            placeholder="Enter password"
-                        />
-                        <small
-                            id="passwordError"
-                            className="text-danger my-3"
-                        ></small>
-                    </div>
-
-                    <div id="errorMessage" className="text-danger my-3"></div>
-
-                    <button
-                        type="submit"
-                        className="btn btn-primary btn-lg btn-block"
-                    >
-                        Register
-                    </button>
-                    <p className="forgot-password text-right">
-                        Already registered <Link to="/login"> Log in? </Link>
-                    </p>
-                </form>
-            </div>
-        );
-    }
-}
-
+                    Register
+                </button>
+                <p className="forgot-password text-right">
+                    Already registered <Link to="/login"> Log in? </Link>
+                </p>
+            </form>
+        </div>
+    );
+};
 export default Register;
